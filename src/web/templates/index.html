@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="ossiqn">
+    <meta name="description" content="HoneyTrap Network — Advanced Honeypot System by ossiqn">
+    <title>HoneyTrap Network — by ossiqn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="crt-effect"></div>
+
+    <header class="header">
+        <div class="header-logo">
+            <span class="logo-bracket">[</span>
+            <span class="logo-text">HONEY</span>
+            <span class="logo-accent">TRAP</span>
+            <span class="logo-bracket">]</span>
+            <span class="logo-owner">by ossiqn</span>
+        </div>
+        <div class="header-center">
+            <span class="status-indicator" id="statusDot"></span>
+            <span class="status-text" id="statusText">INITIALIZING...</span>
+        </div>
+        <div class="header-right">
+            <span class="header-brand">ossiqn.com.tr</span>
+            <span class="header-time" id="headerTime"></span>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-box">
+            <div class="stat-val" id="totalAttacks">0</div>
+            <div class="stat-lbl">TOTAL ATTACKS</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-val" id="uniqueIPs">0</div>
+            <div class="stat-lbl">UNIQUE IPs</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-val" id="recent24h">0</div>
+            <div class="stat-lbl">LAST 24H</div>
+        </div>
+        <div class="stat-box critical">
+            <div class="stat-val" id="criticalCount">0</div>
+            <div class="stat-lbl">CRITICAL</div>
+        </div>
+        <div class="stat-box high">
+            <div class="stat-val" id="highCount">0</div>
+            <div class="stat-lbl">HIGH</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-val" id="iocCount">0</div>
+            <div class="stat-lbl">IOC LIST</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="side-panel">
+                <div class="panel-title"><span class="panel-icon">◈</span> TRAP STATUS</div>
+                <div class="trap-item" id="trap-http">
+                    <span class="trap-dot"></span>
+                    <span class="trap-name">🌐 HTTP TRAP</span>
+                    <span class="trap-port">:8080</span>
+                </div>
+                <div class="trap-item" id="trap-ssh">
+                    <span class="trap-dot"></span>
+                    <span class="trap-name">🔐 SSH TRAP</span>
+                    <span class="trap-port">:2222</span>
+                </div>
+                <div class="trap-item" id="trap-ftp">
+                    <span class="trap-dot"></span>
+                    <span class="trap-name">📁 FTP TRAP</span>
+                    <span class="trap-port">:2121</span>
+                </div>
+                <div class="trap-item" id="trap-tcp">
+                    <span class="trap-dot"></span>
+                    <span class="trap-name">🔌 TCP TRAPS</span>
+                    <span class="trap-port">multi</span>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div class="panel-title"><span class="panel-icon">◈</span> FILTER</div>
+                <div class="filter-item active" onclick="filterByTrap(null)">⬡ ALL TRAPS</div>
+                <div class="filter-item" onclick="filterByTrap('http')">🌐 HTTP</div>
+                <div class="filter-item" onclick="filterByTrap('ssh')">🔐 SSH</div>
+                <div class="filter-item" onclick="filterByTrap('ftp')">📁 FTP</div>
+                <div class="filter-item" onclick="filterByTrap('tcp')">🔌 TCP</div>
+            </div>
+
+            <div class="side-panel">
+                <div class="panel-title"><span class="panel-icon">◈</span> SEVERITY</div>
+                <div class="sev-item critical" onclick="filterBySeverity('critical')"><span class="sev-dot"></span>CRITICAL <span class="sev-cnt" id="sc-critical">0</span></div>
+                <div class="sev-item high"     onclick="filterBySeverity('high')"><span class="sev-dot"></span>HIGH <span class="sev-cnt" id="sc-high">0</span></div>
+                <div class="sev-item medium"   onclick="filterBySeverity('medium')"><span class="sev-dot"></span>MEDIUM <span class="sev-cnt" id="sc-medium">0</span></div>
+                <div class="sev-item low"      onclick="filterBySeverity('low')"><span class="sev-dot"></span>LOW <span class="sev-cnt" id="sc-low">0</span></div>
+                <div class="sev-item all active" onclick="filterBySeverity(null)"><span class="sev-dot"></span>ALL <span class="sev-cnt" id="sc-all">0</span></div>
+            </div>
+
+            <div class="side-panel">
+                <div class="panel-title"><span class="panel-icon">◈</span> ACTIONS</div>
+                <button class="action-btn" onclick="refreshAttacks()">⟳ REFRESH</button>
+                <button class="action-btn" onclick="exportIOC()">⬇ EXPORT IOC</button>
+                <button class="action-btn" onclick="showIOCPanel()">🧬 IOC LIST</button>
+                <button class="action-btn" onclick="showMap()">🗺️ ATTACK MAP</button>
+            </div>
+
+            <div class="ossiqn-badge">
+                <div class="badge-produced">⚙ PRODUCED BY</div>
+                <div class="badge-name">ossiqn</div>
+                <div class="badge-url">ossiqn.com.tr</div>
+                <div class="badge-ver">HoneyTrap v1.0.0</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <div class="terminal-line">
+                    <span class="prompt">root@honeytrap:~$</span>
+                    <span class="cmd"> ./honeytrap --all-traps --live --producer=ossiqn</span>
+                    <span class="cursor">_</span>
+                </div>
+                <div class="tab-bar">
+                    <button class="tab active" onclick="switchTab('attacks')">⚡ ATTACKS</button>
+                    <button class="tab" onclick="switchTab('ioc')">🧬 IOC</button>
+                    <button class="tab" onclick="switchTab('map')">🗺️ MAP</button>
+                    <button class="tab" onclick="switchTab('blacklist')">🚫 BLACKLIST</button>
+                </div>
+            </div>
+
+            <div class="live-bar">
+                <span class="live-dot"></span>
+                <span>LIVE FEED</span>
+                <span class="live-sub">by ossiqn</span>
+                <span class="live-count" id="liveCount">0 attacks</span>
+            </div>
+
+            <div class="tab-content" id="tab-attacks">
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-txt">INITIALIZING HONEYTRAP...</div>
+                    <div class="loading-sub">Produced by ossiqn</div>
+                    <div class="loading-bar"><div class="loading-progress"></div></div>
+                </div>
+                <div id="attacksList"></div>
+                <div class="empty-state" id="emptyState" style="display:none">
+                    <div class="empty-icon">🍯</div>
+                    <div class="empty-txt">HONEY IS SET — WAITING FOR ATTACKERS</div>
+                    <div class="empty-sub">ossiqn honeytrap is active</div>
+                </div>
+                <div class="pagination">
+                    <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>◄ PREV</button>
+                    <span class="pg-info" id="pageInfo">Page 1</span>
+                    <button class="pg-btn" id="nextBtn" onclick="changePage(1)">NEXT ►</button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-ioc" style="display:none">
+                <div id="iocList"></div>
+            </div>
+
+            <div class="tab-content" id="tab-map" style="display:none">
+                <div id="attackMap" style="height:500px; background:#061014; display:flex; align-items:center; justify-content:center; color:#00ffcc; font-family:monospace;">
+                    <div style="text-align:center">
+                        <div style="font-size:48px; margin-bottom:16px;">🗺️</div>
+                        <div style="font-size:14px; letter-spacing:3px;">ATTACK MAP</div>
+                        <div style="font-size:10px; color:#007a66; margin-top:8px;" id="mapCoords"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-blacklist" style="display:none">
+                <div id="blacklistContent"></div>
+            </div>
+        </main>
+
+        <aside class="detail-panel" id="detailPanel">
+            <div class="panel-title">
+                <span class="panel-icon">◈</span> ATTACK DETAIL
+                <button class="close-btn" onclick="closeDetail()">✕</button>
+            </div>
+            <div id="detailContent">
+                <div class="detail-empty">Select an attack to view details</div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="terminal-bar">
+        <div class="terminal-log" id="terminalLog">
+            <span class="log-pre">[SYS]</span> HoneyTrap Network initialized · Produced by ossiqn · ossiqn.com.tr
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

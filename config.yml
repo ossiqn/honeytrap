@@ -1,0 +1,118 @@
+honeytrap:
+  name: "HoneyTrap Network"
+  version: "1.0.0"
+  owner: "ossiqn"
+  
+  traps:
+    http:
+      enabled: true
+      port: 8080
+      fake_endpoints:
+        - "/api/login"
+        - "/api/admin"
+        - "/api/users"
+        - "/api/config"
+        - "/api/keys"
+        - "/wp-admin"
+        - "/phpmyadmin"
+        - "/.env"
+        - "/config.php"
+        - "/admin"
+        - "/panel"
+        - "/shell"
+        - "/cmd"
+        - "/api/v1/auth"
+        - "/api/v1/token"
+        - "/graphql"
+        - "/api/database"
+        - "/backup"
+        - "/debug"
+        - "/console"
+      fake_responses:
+        login_success: true
+        return_fake_tokens: true
+        simulate_real_api: true
+
+    ssh:
+      enabled: true
+      port: 2222
+      banner: "SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.6"
+      max_attempts: 10
+      delay_between_attempts: 1
+      fake_credentials:
+        - username: "admin"
+          password: "admin"
+        - username: "root"
+          password: "root"
+        - username: "user"
+          password: "password"
+
+    ftp:
+      enabled: true
+      port: 2121
+      banner: "220 FTP Server Ready"
+      allow_anonymous: true
+      fake_files:
+        - "passwords.txt"
+        - "config.bak"
+        - "database.sql"
+        - "users.csv"
+        - "secrets.txt"
+
+    smtp:
+      enabled: true
+      port: 2525
+      banner: "220 mail.server.com ESMTP"
+      
+    tcp:
+      enabled: true
+      ports:
+        - 3306
+        - 5432
+        - 6379
+        - 27017
+        - 9200
+        - 8888
+        - 4444
+
+  detection:
+    port_scan_threshold: 5
+    brute_force_threshold: 10
+    time_window_seconds: 60
+    auto_blacklist: true
+    blacklist_duration_hours: 24
+
+  geoip:
+    enabled: true
+    database_path: "data/GeoLite2-City.mmdb"
+    
+  threat_intel:
+    enabled: true
+    abuseipdb_api_key: ""
+    virustotal_api_key: ""
+    
+notifications:
+  discord:
+    enabled: false
+    webhook_url: ""
+    severity_threshold: "medium"
+    
+  telegram:
+    enabled: false
+    bot_token: ""
+    chat_id: ""
+    severity_threshold: "medium"
+
+web:
+  enabled: true
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+
+database:
+  type: "sqlite"
+  path: "data/honeytrap.db"
+
+logging:
+  level: "INFO"
+  file: "data/honeytrap.log"
